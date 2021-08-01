@@ -19,15 +19,6 @@ public static class CodeExtensions
         return Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(value));
     }
 
-    public static string choice(this Random rnd, string choices)
-    {
-        string strings = choices;
-
-        int num = rnd.Next(0, strings.Length - 1);
-
-
-        return strings[num].ToString();
-    }
     public static T[] Slice<T>(this T[] arr, uint indexFrom, uint indexTo)
     {
         if (indexFrom > indexTo)
