@@ -59,22 +59,31 @@ public static class CodeExtensions
 public class TodusClient
 {
     
-    
-        public static string generate_session_id()
-    {
-        String ascii_lowercase = "abcdefghijklmnopqrstuvwxyz";
-        String ascii_uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String ascii_letters = ascii_lowercase + ascii_uppercase;
-        String digits = "0123456789";
+    static string version_name = "0.40.16";
+    static string version_code = "21820";
 
-        Random ran = new Random();
+    
+    public static string GenerateToken(int length = 150)
+    {
+
+        const String ascii_lowercase = "abcdefghijklmnopqrstuvwxyz";
+        const String ascii_uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const String ascii_letters = ascii_lowercase + ascii_uppercase;
+        const String digits = "0123456789";
+
+        const String chars = ascii_letters + digits;
+
+        Random random = new Random();
 
         string output = string.Empty;
 
-        foreach (int index in Enumerable.Range(0,150))
+        foreach (int item in Enumerable.Range(1, length))
         {
-            output += ran.choice(ascii_letters + digits);
+            output += chars[random.Next(chars.Length)];
         }
+
+        //return new string(Enumerable.Range(1, 10)
+        //.Select(_ => chars[random.Next(chars.Length)]).ToArray());
 
         return output;
     }
@@ -120,14 +129,13 @@ public class TodusClient
         }
         return false;
     }
-    public static string Login(string phonenumber, string password)
+    public static string Login(string phone_number, string password)
     {
         string FinalToken = string.Empty;
         string ReadyToken = string.Empty;
         Console.WriteLine("Logueando");
-        string telefono = phonenumber.toUTF8();
-        string sessionid = generate_session_id().toUTF8();
-        string data = "\n\n" + telefono + "\x12\x96\x01" + sessionid + "\x12\x60" + password.toUTF8() + "\x1a\x05" +"21820".toUTF8();
+
+        string data = "\n\n" + phonenumber.toUTF8() + "\x12\x96\x01" + GenerateToken().toUTF8() + "\x12\x60" + password.toUTF8() + "\x1a\x05" + version_code.toUTF8();
         HttpWebResponse respse = TodusApi.HttpClass.POST("https://auth.todus.cu/v2/auth/token", data);
         string response = new StreamReader(respse.GetResponseStream()).ReadToEnd();
         string contenido = string.Empty;
