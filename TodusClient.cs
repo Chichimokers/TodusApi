@@ -88,23 +88,22 @@ public class TodusClient
         return output;
     }
 
-    public static string Register(string PhoneNumber)
+    public static string Register(string phone_number)
     {
-        Console.WriteLine("Haciendo peticiones a auth.todus.cu");        
-        string telefono = PhoneNumber.toUTF8();
-        string sessionid = generate_session_id();
-        string data = "\x0a\x0a" + PhoneNumber.toUTF8() + "\x12\x96\x1" + generate_session_id().toUTF8();
+        Console.WriteLine("Haciendo peticiones a auth.todus.cu");  
+
+        string data = "\x0a\x0a" + phone_number.toUTF8() + "\x12\x96\x1" + GenerateToken(150).toUTF8();
         HttpWebResponse response = TodusApi.HttpClass.POST("https://auth.todus.cu/v2/auth/users.reserve",data);
         string respose = new StreamReader(response.GetResponseStream()).ReadToEnd();
         Console.WriteLine(response.StatusCode + " Se ha registrador correctamente");
         return Convert.ToString(response.StatusCode);     
     }
-    public static string ValidateToken(string code,string PhoneNumber)
+    
+    public static string ValidateToken(string code,string phone_number)
     {
-        Console.WriteLine("ValidandoToken");      
-        string telefono = PhoneNumber.toUTF8();
-        string sessionid = generate_session_id();
-        string data = "\x0a\x0a" + PhoneNumber.toUTF8() + "\x12\x96\x1" + generate_session_id().toUTF8()+"\x1a\x06"+code.toUTF8();
+        Console.WriteLine("ValidandoToken");  
+
+        string data = "\x0a\x0a" + phone_number.toUTF8() + "\x12\x96\x1" + GenerateToken(150).toUTF8() +"\x1a\x06" + code.toUTF8();
         HttpWebResponse respse = TodusApi.HttpClass.POST("https://auth.todus.cu/v2/auth/users.register", data);
         string response = new StreamReader(respse.GetResponseStream()).ReadToEnd();
         string contenido = string.Empty;
@@ -115,7 +114,8 @@ public class TodusClient
             contenido = content;
         }
         return contenido;
-     }
+    }
+    
     public static bool Writetable(char character)
     {
         string abecedario = "ABCDEFHIJKLMNÑOPQRSTUVWXYZabcdefghijklmñopqrstubwxyz123456789=-";
@@ -135,7 +135,7 @@ public class TodusClient
         string ReadyToken = string.Empty;
         Console.WriteLine("Logueando");
 
-        string data = "\n\n" + phonenumber.toUTF8() + "\x12\x96\x01" + GenerateToken().toUTF8() + "\x12\x60" + password.toUTF8() + "\x1a\x05" + version_code.toUTF8();
+        string data = "\n\n" + phone_number.toUTF8() + "\x12\x96\x01" + GenerateToken(150).toUTF8() + "\x12\x60" + password.toUTF8() + "\x1a\x05" + version_code.toUTF8();
         HttpWebResponse respse = TodusApi.HttpClass.POST("https://auth.todus.cu/v2/auth/token", data);
         string response = new StreamReader(respse.GetResponseStream()).ReadToEnd();
         string contenido = string.Empty;
