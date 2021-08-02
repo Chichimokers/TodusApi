@@ -183,11 +183,11 @@ namespace toDusS3X
             var response = receive_data(stream);
       
             var match = Regex.Match(response, ".*du='(.*)' stat.*");
-            Console.WriteLine("[FINAL] " + match.Groups[1].Value.Replace("amp;", ""));
+       
 
 
             Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.Write("[REQUEST_COMPLETE] ");
+        
             Console.ForegroundColor = ConsoleColor.White;
             return match.Groups[1].Value.Replace("amp;", "");
 
