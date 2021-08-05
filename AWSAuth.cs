@@ -26,7 +26,7 @@ namespace toDusS3X
             return strings[num].ToString();
         }
     }
-
+   
     public class s3Request : IDisposable
     {
         String url = String.Empty;
@@ -54,8 +54,11 @@ namespace toDusS3X
         {
 
             String ascii_lowercase = "abcdefghijklmnopqrstuvwxyz";
+
             String ascii_uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
             String ascii_letters = ascii_lowercase + ascii_uppercase;
+
             String digits = "0123456789";
 
             Random ran = new Random();
@@ -106,12 +109,17 @@ namespace toDusS3X
 
 
             var host = "im.todus.cu";
+
             var port = 1756;
+
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
             sock.Connect(host, port);
+
             NetworkStream streamnet = new NetworkStream(sock);
 
             SslStream sendStream = new SslStream(streamnet, false);
+
             sendStream.AuthenticateAsClient(host, null, System.Security.Authentication.SslProtocols.Tls, true);
 
             return start_message_loop(sendStream, sid, authstr, url);
@@ -138,11 +146,11 @@ namespace toDusS3X
 
             //Recibiendo la información de respuesta.
             receive_data(stream);
-        
+
 
             //Recibimos el OAUTH2
             receive_data(stream);
-          
+
 
             //Enviamos el string de autorización generado previamente.
             send_data(stream, Encoding.UTF8.GetBytes("<ah xmlns='ah:ns' e='PLAIN'>" + authStr + "</ah>"));
@@ -150,7 +158,7 @@ namespace toDusS3X
 
             //Recibimos la notificación de autentificación.
             receive_data(stream);
-          
+
 
 
             //Enviamos el string de autorización generado previamente.
@@ -159,11 +167,11 @@ namespace toDusS3X
 
             //Recibimos la primera respuesta
             receive_data(stream);
-            
+
 
             //Recibimos la notificación de que el stream está listo para enviar el id.
             receive_data(stream);
-         
+
 
 
             //Enviamos el string de autorización generado previamente.
@@ -172,7 +180,7 @@ namespace toDusS3X
 
             //Recibimos la respuesta de la sesión.
             receive_data(stream);
-     
+
 
 
             //Enviamos el string de certificación de la url.
@@ -181,14 +189,15 @@ namespace toDusS3X
 
             //Recibimos la respuesta de la sesión.
             var response = receive_data(stream);
-      
+
             var match = Regex.Match(response, ".*du='(.*)' stat.*");
-       
+
 
 
             Console.ForegroundColor = ConsoleColor.DarkRed;
-        
+
             Console.ForegroundColor = ConsoleColor.White;
+
             return match.Groups[1].Value.Replace("amp;", "");
 
 
@@ -219,18 +228,28 @@ namespace toDusS3X
 
         private string receive_data(SslStream stream, int buffer_size = 1024)
         {
+
             byte[] buffer = new byte[1024];
+
             var bytes_count = stream.Read(buffer, 0, buffer.Length);
+
             var result = Encoding.UTF8.GetString(buffer, 0, bytes_count);
+
             //Console.ForegroundColor = ConsoleColor.Green;
+
             //Console.Write("[RECEIVED] ");
+
             //Console.ForegroundColor = ConsoleColor.White;
+
             //Global.print(result);
+
             return result;
+
         }
         //token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjIwNzUzOTIsInVzZXJuYW1lIjoiNTM1MzM2OTEyNSIsInZlcnNpb24iOiIyMTgwNiJ9.w1lK_1dcvE4Y7mfgqOZD6n9F5pgxIz-yMmEvZSyQNz0
         //https://s3.todus.cu/todus/file/2021-05-26/10f/10f2cab3eaa3731b133b78be804bfd1d72a473e26ef8b6db2ddd621c5dd5c49f
 
     }
+
 
 }

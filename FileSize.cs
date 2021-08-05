@@ -11,13 +11,18 @@ namespace TodusApi
         public static string Check(long size)
         {
             string finalsize = string.Empty;
+
             if (size > 1000)
             {
                 finalsize  =  Convert.ToString(size / 1000) + " kb";
+
                 if (size > 1000000)
                 {
+
                     finalsize = Convert.ToString(size / 1000000) + " Mb";
+
                 }
+
             }
             return finalsize;
            

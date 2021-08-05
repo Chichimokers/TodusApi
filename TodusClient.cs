@@ -31,12 +31,17 @@ public static class CodeExtensions
     public static T[] Slice<T>(this T[] arr, uint indexFrom, uint indexTo)
     {
         if (indexFrom > indexTo)
+
         {
+
             throw new ArgumentOutOfRangeException("indexFrom is bigger than indexTo!");
+
         }
 
         uint length = indexTo - indexFrom;
+
         T[] result = new T[length];
+
         Array.Copy(arr, indexFrom, result, 0, length);
 
         return result;
@@ -44,14 +49,19 @@ public static class CodeExtensions
 
     public static string ToISO88591(this string text)
     {
+
         return Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.Default.GetBytes(text));
+
     }
 
     public static string ToHEXString(this byte[] ba)
     {
         StringBuilder hex = new StringBuilder(ba.Length * 2);
+
         foreach (byte b in ba)
+
             hex.AppendFormat("{0:X2} ", b);
+
         return hex.ToString();
     }
 
@@ -63,8 +73,11 @@ public class TodusClient
     public static string generate_session_id()
     {
         String ascii_lowercase = "abcdefghijklmnopqrstuvwxyz";
+
         String ascii_uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
         String ascii_letters = ascii_lowercase + ascii_uppercase;
+
         String digits = "0123456789";
 
         Random ran = new Random();
@@ -82,78 +95,128 @@ public class TodusClient
     public static string Register(string PhoneNumber)
     {
         Console.WriteLine("Haciendo peticiones a auth.todus.cu");
+
         string telefono = PhoneNumber.toUTF8();
+
         string sessionid = generate_session_id();
+
         string data = "\x0a\x0a" + PhoneNumber.toUTF8() + "\x12\x96\x1" + generate_session_id().toUTF8();
+
         HttpWebResponse response = TodusApi.HttpClass.POST("https://auth.todus.cu/v2/auth/users.reserve", data);
+
         string respose = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
         Console.WriteLine(response.StatusCode + " Se ha registrador correctamente");
+
         return Convert.ToString(response.StatusCode);
     }
     public static string ValidateToken(string code, string PhoneNumber)
     {
         Console.WriteLine("ValidandoToken");
+
         string telefono = PhoneNumber.toUTF8();
+
         string sessionid = generate_session_id();
+
         string data = "\x0a\x0a" + PhoneNumber.toUTF8() + "\x12\x96\x1" + generate_session_id().toUTF8() + "\x1a\x06" + code.toUTF8();
+
         HttpWebResponse respse = TodusApi.HttpClass.POST("https://auth.todus.cu/v2/auth/users.register", data);
+
         string response = new StreamReader(respse.GetResponseStream()).ReadToEnd();
+
         string contenido = string.Empty;
+
         if (response.Contains('`'))
         {
             int index = response.IndexOf('`') + 1;
+
             string content = response.ToISO88591().Substring(index, 96);
+
             contenido = content;
         }
+
         return contenido;
     }
     public static bool Writetable(char character)
     {
         string abecedario = "ABCDEFHIJKLMNÑOPQRSTUVWXYZabcdefghijklmñopqrstubwxyz123456789=-.";
+
         List<char> validletters = abecedario.ToList<char>();
+
         foreach (char letra in validletters)
         {
+
             if (character == letra)
+
             {
                 return true;
+
             }
+
         }
+
         return false;
     }
     public static string Login(string phonenumber, string password)
     {
         string FinalToken = string.Empty;
+
         string ReadyToken = string.Empty;
+
         Console.WriteLine("Logueando");
+
         string telefono = phonenumber.toUTF8();
+
         string sessionid = generate_session_id().toUTF8();
+
         string data = "\n\n" + telefono + "\x12\x96\x01" + sessionid + "\x12\x60" + password.toUTF8() + "\x1a\x05" + "21820".toUTF8();
+
         HttpWebResponse respse = TodusApi.HttpClass.POST("https://auth.todus.cu/v2/auth/token", data);
+
         string response = new StreamReader(respse.GetResponseStream()).ReadToEnd();
+
         string contenido = string.Empty;
+
         if (Convert.ToString(respse.StatusCode) == "OK" || Convert.ToString(respse.StatusCode) == "100")
         {
             Console.WriteLine("Obteninedo Token para descargas y subidas ");
+
             ReadyToken = response.ToISO88591();
+
             List<char> tokenlist = ReadyToken.ToList<char>();
+
             for (int i = 5; i <= 166; i++)
             {
+
                 FinalToken += tokenlist[i];
+
             }
         }
+
         return FinalToken;
+    }
+    public static void UploadFile(string token,string phone)
+    {
+  
+
     }
     public static void DowlandFromTxt(string path, string TOKEN)
     {
         string urlout = string.Empty;
+
         string nameout = string.Empty;
+
             
         List<string> leido = File.ReadAllLines(path).ToList<string>();
+
         foreach (string seleccionado in leido)
         {
             string fianl = seleccionado.ToISO88591();
+
             List<char> caraceres = fianl.ToList<char>();
+
             bool nameorurl = true;
+
             foreach (var er in caraceres)
             {
                 
@@ -161,26 +224,41 @@ public class TodusClient
                 {
                     if (er == '\t')
                     {
+
                         nameorurl = false;
+
                     }
-                    else
+                   else
                     {
+
                         urlout += er;
+
                     }
+
                 }
+
                 else
+
                 {
+
                     nameout += er;
+
                 }
             }
+
             Console.ForegroundColor = ConsoleColor.Green;
+
             Console.WriteLine("Descargando " + nameout);
+
             Console.ForegroundColor = ConsoleColor.White;
+
             TodusClient.DowlandFile(urlout, TOKEN, nameout);
+
             urlout = string.Empty;
+
             nameout = string.Empty;
           
-           
+    
         }
         
     }
@@ -188,6 +266,7 @@ public class TodusClient
     {
 
         TodusApi.HttpClass.DowlandFile(URL, TOKEN,name);
+
     }
 
 
